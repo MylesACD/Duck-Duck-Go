@@ -1,7 +1,5 @@
 package main
 
-import "errors"
-
 type Piece struct {
 	x     int
 	y     int
@@ -51,10 +49,10 @@ func piece_to_unicode(p Piece) string {
 		}
 	}
 
-	return errors.New("Could not determine correct symbol").Error()
+	panic("Could not display unicode piece")
 }
 
-func get_empty_piece(x, y int) Piece {
+func generate_empty_piece(x, y int) Piece {
 	return Piece{x: x, y: y, kind: "empty", color: 0, worth: 0}
 }
 
@@ -72,7 +70,8 @@ func translate_to_PGN(p *Piece) string {
 	} else if p.kind == "rook" {
 		return "R"
 	} else {
-		return " Unrecognized piece "
+
+		panic("could not translate to PGN")
 	}
 
 }

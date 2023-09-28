@@ -2,6 +2,7 @@ package main
 
 var BLACK = -1
 var WHITE = 1
+var OUTCOME_MULTIPLIER = 1000
 
 // white will always be positive and black negative
 // 0,0 is top left corner
@@ -12,18 +13,19 @@ type GameState struct {
 	turn_num     int
 	curr_player  int
 	duck         Piece
+	result       int
 
 	board [8][8]Piece
 	// if a game has 100 entries of previously reversable states it is a draw
-	reversable_previous_states []string
+	reversable_previous_state_strings []string
 }
 
-func get_starting_game_state() GameState {
+func generate_starting_game_state() GameState {
 	new := GameState{white_mat: 39, black_mat: 39, is_end_state: false, turn_num: 1, curr_player: WHITE, duck: generate_default_duck()}
 
 	for y := 2; y < 6; y++ {
 		for x := 0; x < 8; x++ {
-			new.board[y][x] = get_empty_piece(x, y)
+			new.board[y][x] = generate_empty_piece(x, y)
 		}
 	}
 
@@ -70,13 +72,14 @@ func (state *GameState) swap_pieces(x1, y1, x2, y2 int) {
 
 func is_3fold_rep(s *GameState) bool {
 	count := 1
-	var curr_str string = s.String()
-	for i := range s.reversable_previous_states {
-		if s.reversable_previous_states[i] == curr_str {
+	curr_str := s.String()
+	for i := range s.reversable_previous_state_strings {
+		if s.reversable_previous_state_strings[i] == curr_str {
 			count++
 			if count == 3 {
 				return true
 			}
+
 		}
 
 	}
@@ -85,12 +88,12 @@ func is_3fold_rep(s *GameState) bool {
 }
 
 func is_50_move_limit(s *GameState) bool {
-	return len(s.reversable_previous_states) == 100
+	return len(s.reversable_previous_state_strings) == 100
 }
 
 // mutates GameState
-func (s *GameState) clear_reversable_states() {
-	s.reversable_previous_states = nil
+func (state *GameState) clear_reversable_state_strings() {
+	state.reversable_previous_state_strings = nil
 }
 
 func evaluateBoard(state GameState) int {
@@ -107,7 +110,7 @@ func generatePossibleMoves(state GameState) []Move {
 	return nil
 }
 
-func (s *GameState) is_terminal_node(depth int) bool {
+func is_terminal_node(s *GameState, depth int) bool {
 	// Check if the current state is a terminal node (end of the game or maximum search depth reached)
 	return depth == 0 || s.is_end_state /* || game is over */
 }

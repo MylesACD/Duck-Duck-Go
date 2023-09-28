@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	_ "net/http/pprof"
+	"time"
 )
 
 func minimax(state GameState, depth int, maximizingPlayer bool) int {
@@ -58,7 +59,9 @@ func min(a, b int) int {
 
 func main() {
 	// Initialize the game state
-	initialState := get_starting_game_state() // Initialize with the starting position
+	start := time.Now()
+	initialState := generate_starting_game_state() // Initialize with the starting position
 	fmt.Println(initialState)
-
+	elapsed := time.Since(start)
+	fmt.Println("Total Time:", elapsed)
 }

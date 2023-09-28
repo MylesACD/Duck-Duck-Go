@@ -46,3 +46,7 @@ func (m Move) String() string {
 
 	return str + files[m.sx] + strconv.Itoa(8-m.sy) + "x" + files[m.ex] + strconv.Itoa(8-m.ey) + m.extra
 }
+
+func is_move_unreverseable(m *Move) bool {
+	return m.piece.kind == "pawn" || m.cap
+}
