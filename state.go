@@ -1,8 +1,8 @@
 package main
 
-var BLACK = -1
-var WHITE = 1
-var OUTCOME_MULTIPLIER = 1000
+const BLACK = -1
+const WHITE = 1
+const OUTCOME_MULTIPLIER = 1000
 
 // white will always be positive and black negative
 // 0,0 is top left corner
@@ -18,6 +18,7 @@ type GameState struct {
 	board [8][8]Piece
 	// if a game has 100 entries of previously reversable states it is a draw
 	reversable_previous_state_strings []string
+	previous_move                     Move
 }
 
 func generate_starting_game_state() GameState {
@@ -96,23 +97,77 @@ func (state *GameState) clear_reversable_state_strings() {
 	state.reversable_previous_state_strings = nil
 }
 
-func evaluateBoard(state GameState) int {
+func evaluate_board(s *GameState) int {
 	// Evaluate the current game state and return a heuristic value
 	// Positive values favor the maximizing player (White), negative values favor the minimizing player (Black)
-	if state.is_end_state {
-		return 10000 * state.curr_player
+	if s.is_end_state {
+		return s.result * OUTCOME_MULTIPLIER
+	} else {
+		return s.white_mat - s.black_mat
 	}
-	return state.white_mat - state.black_mat
 }
 
-func generatePossibleMoves(state GameState) []Move {
+func generate_possible_moves(s *GameState) []Move {
 	// Generate and return a list of possible moves for the current game state
-	return nil
+	var possible_moves []Move
+	for y := range s.board {
+		for x := range s.board[y] {
+			piece := s.board[y][x]
+			kind := piece.kind
+			if piece.worth != 0 && piece.color == s.curr_player {
+
+				if kind == "pawn" {
+					// move 1 forward
+					if y-s.curr_player >= 0 && is_empty(s, x, y-s.curr_player) {
+						possible_moves = append(possible_moves, new_move(&piece, x, y, false, x, y-s.curr_player))
+					}
+
+					// move 2 forward
+					var pawn_rank int
+					if s.curr_player == -1 {
+						pawn_rank = 1
+					} else {
+						pawn_rank = 6
+					}
+					if (y == pawn_rank) && is_empty(s, x, y-s.curr_player) && is_empty(s, x, y-2*s.curr_player) {
+						possible_moves = append(possible_moves, new_move(&piece, x, y, false, x, y-2*s.curr_player))
+					}
+					/*
+					   	// take left
+					   	if piece.x>0 && self.board[piece.y-1,piece.x-1]!=em && get_color(self.board[piece.y-1,piece.x-1]) != piece.color:
+					      		possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x-1, piece.y-1,""))
+
+					   	// take right
+					   	if piece.x<7 && self.board[piece.y-1,piece.x+1]!=em && get_color(self.board[piece.y-1,piece.x+1]) != piece.color:
+					       	possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x+1, piece.y-1,""))
+					   	//en passant
+					   	if self.previousMove && piece.y == 3 && self.previousMove.piece.type == bp && self.previousMove.ey - self.previousMove.sy == 2 && (self.previousMove.ex == piece.x - 1 or self.previousMove.ex == piece.x + 1):
+					       	possible_moves.append(m.Move(piece, piece.x, piece.y, "x",self.previousMove.ex, self.previousMove.ey - 1,"",True))
+
+					*/
+				} else if kind == "knight" {
+
+				} else if kind == "bishop" {
+
+				} else if kind == "rook" {
+
+				} else if kind == "king" {
+
+				} else if kind == "queen" {
+
+				} else {
+					panic("unrecognized piece kind in board")
+				}
+			}
+
+		}
+	}
+
+	return possible_moves
 }
 
-func is_terminal_node(s *GameState, depth int) bool {
-	// Check if the current state is a terminal node (end of the game or maximum search depth reached)
-	return depth == 0 || s.is_end_state /* || game is over */
+func is_empty(s *GameState, x, y int) bool {
+	return s.board[y][x].kind == "empty"
 }
 
 func (s GameState) String() string {

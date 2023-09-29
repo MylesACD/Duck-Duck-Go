@@ -3,7 +3,7 @@ package main
 import "strconv"
 
 type Move struct {
-	piece   Piece
+	piece   *Piece
 	sx      int
 	sy      int
 	cap     bool
@@ -25,8 +25,16 @@ var files = map[int]string{
 	7: "h",
 }
 
+func new_move(p *Piece, sx, sy int, cap bool, ex, ey int) Move {
+	return Move{piece: p, sx: sx, sy: sy, cap: cap, ex: ex, ey: ey, extra: "", passant: false, castle: false}
+}
+
+func new_special_move(p *Piece, sx, sy int, cap bool, ex, ey int, extra string, passant, castle bool) Move {
+	return Move{piece: p, sx: sx, sy: sy, cap: cap, ex: ex, ey: ey, extra: extra, passant: passant, castle: castle}
+}
+
 func (m Move) String() string {
-	str := translate_to_PGN(&m.piece)
+	str := translate_to_PGN(m.piece)
 
 	// castle case
 	if m.castle {
