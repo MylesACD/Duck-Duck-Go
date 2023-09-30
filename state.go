@@ -124,7 +124,7 @@ func generate_possible_moves(s *GameState) []Move {
 
 					// move 2 forward
 					var pawn_rank int
-					if s.curr_player == -1 {
+					if s.curr_player == BLACK {
 						pawn_rank = 1
 					} else {
 						pawn_rank = 6
@@ -132,17 +132,17 @@ func generate_possible_moves(s *GameState) []Move {
 					if (y == pawn_rank) && is_empty(s, x, y-s.curr_player) && is_empty(s, x, y-2*s.curr_player) {
 						possible_moves = append(possible_moves, new_move(&piece, x, y, false, x, y-2*s.curr_player))
 					}
-					/*
-					   	// take left
-					   	if piece.x>0 && self.board[piece.y-1,piece.x-1]!=em && get_color(self.board[piece.y-1,piece.x-1]) != piece.color:
-					      		possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x-1, piece.y-1,""))
 
-					   	// take right
-					   	if piece.x<7 && self.board[piece.y-1,piece.x+1]!=em && get_color(self.board[piece.y-1,piece.x+1]) != piece.color:
-					       	possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x+1, piece.y-1,""))
-					   	//en passant
-					   	if self.previousMove && piece.y == 3 && self.previousMove.piece.type == bp && self.previousMove.ey - self.previousMove.sy == 2 && (self.previousMove.ex == piece.x - 1 or self.previousMove.ex == piece.x + 1):
-					       	possible_moves.append(m.Move(piece, piece.x, piece.y, "x",self.previousMove.ex, self.previousMove.ey - 1,"",True))
+					// take left
+					/*if piece.x>0 && self.board[piece.y-1,piece.x-1]!=em && get_color(self.board[piece.y-1,piece.x-1]) != piece.color:
+					     		possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x-1, piece.y-1,""))
+
+					  	// take right
+					  	if piece.x<7 && self.board[piece.y-1,piece.x+1]!=em && get_color(self.board[piece.y-1,piece.x+1]) != piece.color:
+					      	possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x+1, piece.y-1,""))
+					  	//en passant
+					  	if self.previousMove && piece.y == 3 && self.previousMove.piece.type == bp && self.previousMove.ey - self.previousMove.sy == 2 && (self.previousMove.ex == piece.x - 1 or self.previousMove.ex == piece.x + 1):
+					      	possible_moves.append(m.Move(piece, piece.x, piece.y, "x",self.previousMove.ex, self.previousMove.ey - 1,"",True))
 
 					*/
 				} else if kind == "knight" {

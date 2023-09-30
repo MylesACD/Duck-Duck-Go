@@ -61,7 +61,9 @@ func main() {
 	// Initialize the game state
 	start := time.Now()
 	initialState := generate_starting_game_state() // Initialize with the starting position
+	initialState.swap_pieces(7, 6, 5, 5)
 	fmt.Println(initialState)
+	fmt.Println(generate_possible_moves(&initialState))
 	elapsed := time.Since(start)
 	fmt.Println("Total Time:", elapsed)
 }
