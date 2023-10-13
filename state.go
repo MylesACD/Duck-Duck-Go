@@ -134,18 +134,72 @@ func generate_possible_moves(s *GameState) []Move {
 					}
 
 					// take left
-					/*if piece.x>0 && self.board[piece.y-1,piece.x-1]!=em && get_color(self.board[piece.y-1,piece.x-1]) != piece.color:
-					     		possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x-1, piece.y-1,""))
+					if x > 0 && !is_empty(s, x-1, y-s.curr_player) && s.board[y-s.curr_player][x-1].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, x-1, y-s.curr_player))
+					}
 
-					  	// take right
-					  	if piece.x<7 && self.board[piece.y-1,piece.x+1]!=em && get_color(self.board[piece.y-1,piece.x+1]) != piece.color:
-					      	possible_moves.append(m.Move(piece, piece.x, piece.y, "x", piece.x+1, piece.y-1,""))
-					  	//en passant
-					  	if self.previousMove && piece.y == 3 && self.previousMove.piece.type == bp && self.previousMove.ey - self.previousMove.sy == 2 && (self.previousMove.ex == piece.x - 1 or self.previousMove.ex == piece.x + 1):
-					      	possible_moves.append(m.Move(piece, piece.x, piece.y, "x",self.previousMove.ex, self.previousMove.ey - 1,"",True))
+					// take right
+					if x < 7 && !is_empty(s, x+1, y-s.curr_player) && s.board[y-s.curr_player][x+1].color != s.curr_player {
 
-					*/
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, x+1, y-s.curr_player))
+
+					}
+
+					//en passant
+					if can_passant(s, x, y) {
+						possible_moves = append(possible_moves, new_special_move(&piece, x, y, true, s.previous_move.ex, y-s.curr_player, "", true, false))
+					}
+
 				} else if kind == "knight" {
+					// north jump, left
+					tempx := x - 1
+					tempy := y - 2
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
+					// north jump, right
+					tempx = x + 1
+					tempy = y - 2
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
+
+					// east jump, north
+					tempx = x + 2
+					tempy = y - 1
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
+					// east jump, south
+					tempx = x + 2
+					tempy = y + 1
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
+					// south jump, east
+					tempx = x + 1
+					tempy = y + 2
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
+					// south jump, west
+					tempx = x - 1
+					tempy = y + 2
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
+					// west jump, south
+					tempx = x - 2
+					tempy = y + 1
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
+					// west jump, north
+					tempx = x - 2
+					tempy = y - 1
+					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
+						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+					}
 
 				} else if kind == "bishop" {
 
@@ -166,8 +220,37 @@ func generate_possible_moves(s *GameState) []Move {
 	return possible_moves
 }
 
+func add_move(list []Move, s *GameState, m Move) []Move {
+	if s.board[m.ey][m.ex].kind == "empty" {
+		return append(list, m)
+	} else {
+		m.cap = true
+		if s.board[m.ey][m.ex].kind == "king" {
+			m.extra += "#"
+		}
+		return append(list, m)
+	}
+}
+
+func in_bounds(x, y int) bool {
+	return x > -1 && x < 8 && y > -1 && y < 8
+}
+
 func is_empty(s *GameState, x, y int) bool {
 	return s.board[y][x].kind == "empty"
+}
+
+func can_passant(s *GameState, x, y int) bool {
+	if s.turn_num > 1 {
+		was_pawn := s.previous_move.piece.kind == "pawn"
+		was_double := abs(s.previous_move.sy-s.previous_move.ey) == 2
+		is_adjacent := abs(s.previous_move.ex-x) == 1
+		is_level := s.previous_move.ey == y
+
+		return was_pawn && was_double && is_adjacent && is_level
+	}
+
+	return false
 }
 
 func (s GameState) String() string {
@@ -176,19 +259,6 @@ func (s GameState) String() string {
 	for y := range s.board {
 		for x := range s.board[y] {
 			str += piece_to_unicode(s.board[y][x]) + " "
-		}
-		str += "\n"
-	}
-	return str
-}
-
-// TODO not needed?
-func gridize2D(arr [][]string) string {
-	var str string
-	for col := range arr {
-		for row := range arr[col] {
-
-			str += arr[col][row]
 		}
 		str += "\n"
 	}
