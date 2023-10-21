@@ -64,9 +64,11 @@ func main() {
 	initialState.swap_pieces(6, 6, 2, 2)
 	initialState.swap_pieces(4, 0, 0, 5)
 	initialState.swap_pieces(6, 7, 4, 4)
+	initialState.swap_pieces(2, 7, 2, 3)
+	initialState.swap_pieces(7, 7, 6, 5)
 
 	fmt.Println(initialState)
-	fmt.Println(generate_possible_moves(&initialState))
+	fmt.Println(generate_possible_moves(&initialState)
 
 	elapsed := time.Since(start)
 	fmt.Println("Total Time:", elapsed)

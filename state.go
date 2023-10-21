@@ -114,6 +114,8 @@ func generate_possible_moves(s *GameState) []Move {
 		for x := range s.board[y] {
 			piece := s.board[y][x]
 			kind := piece.kind
+			tempx := -1
+			tempy := -1
 			if piece.worth != 0 && piece.color == s.curr_player {
 
 				if kind == "pawn" {
@@ -152,8 +154,8 @@ func generate_possible_moves(s *GameState) []Move {
 
 				} else if kind == "knight" {
 					// north jump, left
-					tempx := x - 1
-					tempy := y - 2
+					tempx = x - 1
+					tempy = y - 2
 					if in_bounds(tempx, tempy) && s.board[tempy][tempx].color != s.curr_player {
 						possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
 					}
@@ -202,15 +204,263 @@ func generate_possible_moves(s *GameState) []Move {
 					}
 
 				} else if kind == "bishop" {
+					// move nw
+					tempx = x - 1
+					tempy = y - 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx -= 1
+						tempy -= 1
+					}
+					// move ne
+					tempx = x + 1
+					tempy = y - 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx += 1
+						tempy -= 1
+					}
+					// move se
+					tempx = x + 1
+					tempy = y + 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx += 1
+						tempy += 1
+					}
+					// move sw
+					tempx = x - 1
+					tempy = y + 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx -= 1
+						tempy += 1
+					}
 
 				} else if kind == "rook" {
+					// move west
+					tempx = x - 1
+					tempy = y
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx -= 1
+					}
+					// move north
+					tempx = x
+					tempy = y - 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempy -= 1
+					}
+					// move east
+					tempx = x + 1
+					tempy = y
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx += 1
+					}
+					// move south
+					tempx = x
+					tempy = y + 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempy += 1
+					}
 
 				} else if kind == "king" {
-
+					//TODO
 				} else if kind == "queen" {
+					// move west
+					tempx = x - 1
+					tempy = y
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx -= 1
+					}
+					// move north
+					tempx = x
+					tempy = y - 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempy -= 1
+					}
+					// move east
+					tempx = x + 1
+					tempy = y
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx += 1
+					}
+					// move south
+					tempx = x
+					tempy = y + 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempy += 1
+					}
+					// move nw
+					tempx = x - 1
+					tempy = y - 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx -= 1
+						tempy -= 1
+					}
+					// move ne
+					tempx = x + 1
+					tempy = y - 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx += 1
+						tempy -= 1
+					}
+					// move se
+					tempx = x + 1
+					tempy = y + 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx += 1
+						tempy += 1
+					}
+					// move sw
+					tempx = x - 1
+					tempy = y + 1
+					for in_bounds(tempx, tempy) {
+						if s.board[tempy][tempx].kind == "empty" {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, false, tempx, tempy))
+
+						} else if s.board[tempy][tempx].color != piece.color {
+							possible_moves = add_move(possible_moves, s, new_move(&piece, x, y, true, tempx, tempy))
+							break
+						} else {
+							break
+						}
+						tempx -= 1
+						tempy += 1
+					}
 
 				} else {
-					panic("unrecognized piece kind in board")
+					panic("unrecognized piece kind on the board")
 				}
 			}
 
